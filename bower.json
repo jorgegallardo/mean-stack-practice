@@ -1,0 +1,7 @@
+{
+  "name": "mean-stack-practice",
+  "dependencies": {
+    "angular": "^1.5.3",
+    "bootstrap": "^3.3.6"
+  }
+}
