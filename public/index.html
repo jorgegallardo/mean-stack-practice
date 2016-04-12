@@ -1,9 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="practice">
 <head>
   <title>Mean Stack Practice</title>
+  <link rel="stylesheet" type="text/css" href="./libs/bootstrap/dist/css/bootstrap.css">
 </head>
-<body>
+<body ng-controller="TheController">
   <h1>Testing 1, 2, 3!</h1>
+  <ul>
+    <li ng-repeat="quote in quotes">{{quote}}</li>
+  </ul>
+
+  <script src="./libs/jquery/dist/jquery.js"></script>
+  <script src="./libs/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="./libs/angular/angular.js"></script>
+  <script type="text/javascript">
+    angular.module('practice', [])
+    .controller('TheController', ['$scope', '$http', function($scope, $http) {
+      $http.get('/quotes').then(function(response) {
+        $scope.quotes = response.data;
+      });
+    }]);
+  </script>
 </body>
 </html>
