@@ -1,0 +1,8 @@
+{
+  "name": "mean-stack-practice",
+  "main": "server.js",
+  "author": "Jorge Gallardo",
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}
