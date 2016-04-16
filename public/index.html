@@ -3,12 +3,24 @@
 <head>
   <title>Mean Stack Practice</title>
   <link rel="stylesheet" type="text/css" href="./libs/bootstrap/dist/css/bootstrap.css">
+
 </head>
 <body ng-controller="TheController">
-  <h1>Testing 1, 2, 3!</h1>
-  <ul>
-    <li ng-repeat="quote in quotes">{{quote}}</li>
-  </ul>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h1>Add a quote</h1>
+        <input type="text" class="form-control" placeholder="Type your quote here." ng-model="newQuote">
+        <button type="button" class="btn btn-primary" ng-click="submitNewQuote()">Submit</button>
+      </div>
+      <div class="col-md-8">
+        <h1>Testing 1, 2, 3!</h1>
+        <ul>
+          <li ng-repeat="quote in quotes">{{quote}}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
   <script src="./libs/jquery/dist/jquery.js"></script>
   <script src="./libs/bootstrap/dist/js/bootstrap.js"></script>
@@ -16,6 +28,11 @@
   <script type="text/javascript">
     angular.module('practice', [])
     .controller('TheController', ['$scope', '$http', function($scope, $http) {
+      $scope.submitNewQuote = function() {
+        $http.post('/quotes', {newQuote: $scope.newQuote}).then(function() {
+          alert('success!');
+        });
+      };
       $http.get('/quotes').then(function(response) {
         $scope.quotes = response.data;
       });
