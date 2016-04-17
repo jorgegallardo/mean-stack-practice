@@ -3,6 +3,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert'); // module used for writing unit tests for applications
+var ObjectId = require('mongodb').ObjectID;
 var url = 'mongodb://localhost:27017/quotes';
 
 // Use connect method to connect to the Server
@@ -18,10 +19,7 @@ app.use(bodyParser.json());
 
 app.use(express.static('public'));
 
-// app.get('/', function(req, res) {
-//   res.send('Hello World!');
-// });
-
+//==================GET==================
 app.get('/quotes', function(req, res) {
   var quotesArray = [];
   MongoClient.connect(url, function(err, db) {
@@ -36,8 +34,8 @@ app.get('/quotes', function(req, res) {
     });
   });
 });
-
-app.post('/quotes', function(req, res) {
+//==================INSERT==================
+app.post('/insert', function(req, res) {
   var item = {
     text: req.body.newQuote
   };
@@ -50,6 +48,23 @@ app.post('/quotes', function(req, res) {
     });
   });
   res.send(); //server will hang if this isn't sent
+});
+//==================UPDATE==================
+app.put('/update', function(req, res) {
+  var item =  {
+    text: req.body.updatedQuote
+  };
+  var id = req.body.id;
+
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    db.collection('quotes').updateOne({"_id": ObjectId(id)}, {$set: item},function(err, result) {
+      assert.equal(null, err);
+      console.log('Quote updated.');
+      db.close();
+    });
+  });
+  res.send();
 });
 
 app.listen(3000, function() {
