@@ -9,14 +9,20 @@
   <div class="container">
     <div class="row">
       <div class="col-md-4">
-        <h1>Add a quote</h1>
+        <h1>Create quote</h1>
         <input type="text" class="form-control" placeholder="Type your quote here." ng-model="newQuote">
         <button type="button" class="btn btn-primary" ng-click="submitNewQuote()">Submit</button>
+
+        <h1>Read quote</h1>
+
+        <h1>Update quote</h1>
+
+        <h1>Delete quote</h1>
       </div>
       <div class="col-md-8">
         <h1>Testing 1, 2, 3!</h1>
         <ul>
-          <li ng-repeat="quote in quotes">{{quote}}</li>
+          <li ng-repeat="quote in quotes">{{quote.text}}</li>
         </ul>
       </div>
     </div>
