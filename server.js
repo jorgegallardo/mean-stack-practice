@@ -58,9 +58,23 @@ app.put('/update', function(req, res) {
 
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-    db.collection('quotes').updateOne({"_id": ObjectId(id)}, {$set: item},function(err, result) {
+    db.collection('quotes').updateOne({"_id": ObjectId(id)}, {$set: item}, function(err, result) {
       assert.equal(null, err);
       console.log('Quote updated.');
+      db.close();
+    });
+  });
+  res.send();
+});
+//==================DELETE==================
+app.put('/delete', function(req, res) {
+  var id = req.body.id;
+
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    db.collection('quotes').deleteOne({"_id": ObjectId(id)}, function(err, result) {
+      assert.equal(null, err);
+      console.log('Quote deleted.');
       db.close();
     });
   });
