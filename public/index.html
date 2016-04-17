@@ -71,13 +71,15 @@
   <script type="text/javascript">
     angular.module('practice', [])
     .controller('TheController', ['$scope', '$http', function($scope, $http) {
-      $http.get('/quotes').then(function(response) {
-        $scope.quotes = response.data;
-      });
+      function getQuotes() {
+        $http.get('/quotes').then(function(response) {
+          $scope.quotes = response.data;
+        });
+      }
       $scope.submitNewQuote = function() {
         $http.post('/insert', {newQuote: $scope.newQuoteText}).then(function() {
-          $scope.newQuote = "";
-          alert("Quote inserted!");
+          getQuotes();
+          $scope.newQuoteText = "";
         });
       };
       $scope.updateQuote = function() {
@@ -87,15 +89,16 @@
         }).then(function() {
           $scope.id = "";
           $scope.updatedQuote = "";
-          alert("Quote updated!");
+          getQuotes();
         });
       };
       $scope.deleteQuote = function() {
         $http.put('/delete', {id: $scope.id}).then(function() {
           $scope.id = "";
-          alert("Quote deleted!");
+          getQuotes();
         });
       };
+      getQuotes();
     }]);
   </script>
 </body>
