@@ -26,8 +26,8 @@ app.get('/quotes', function(req, res) {
   var quotesArray = [];
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-    var cursor = db.collection('quotes');
-    cursor.find().forEach(function(doc, err) {
+    var cursor = db.collection('quotes').find();
+    cursor.forEach(function(doc, err) {
       assert.equal(null, err);
       quotesArray.push(doc);
     }, function() {
@@ -38,19 +38,17 @@ app.get('/quotes', function(req, res) {
 });
 
 app.post('/quotes', function(req, res) {
-  // var item = {
-  //   text: req.body.newQuote
-  // };
-  // MongoClient.connect(url, function(err, db) {
-  //   assert.equal(null, err);
-  //   db.collection('quotes').insertOne(item, function(err, result) {
-  //     assert.equal(null, err);
-  //     console.log('Quote inserted.');
-  //     db.close();
-  //   });
-  // });
-  // res.redirect('/');
-  quotes.push(req.body.newQuote);
+  var item = {
+    text: req.body.newQuote
+  };
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    db.collection('quotes').insertOne(item, function(err, result) {
+      assert.equal(null, err);
+      console.log('Quote inserted.');
+      db.close();
+    });
+  });
   res.send(); //server will hang if this isn't sent
 });
 
