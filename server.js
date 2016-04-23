@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 
 app.use(express.static('public'));
 
-//==================GET==================
+//==================LOAD QUOTES==================
 app.get('/quotes', function(req, res) {
   var quotesArray = [];
   MongoClient.connect(url, function(err, db) {
@@ -36,7 +36,7 @@ app.get('/quotes', function(req, res) {
     });
   });
 });
-//==================INSERT==================
+//==================INSERT QUOTE==================
 app.post('/insert', function(req, res) {
   var item = {
     text: req.body.newQuote
@@ -50,6 +50,37 @@ app.post('/insert', function(req, res) {
     });
   });
   res.send(); //server will hang if this isn't sent
+});
+//==================UPDATE QUOTE==================
+app.put('/update', function(req, res) {
+  var item =  {
+    text: req.body.updatedQuote
+  };
+  var id = req.body.id;
+
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    db.collection('quotes').updateOne({"_id": ObjectId(id)}, {$set: item}, function(err, result) {
+      assert.equal(null, err);
+      console.log('Quote updated.');
+      db.close();
+    });
+  });
+  res.send();
+});
+//==================DELETE QUOTE==================
+app.put('/delete', function(req, res) {
+  var id = req.body.id;
+
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    db.collection('quotes').deleteOne({"_id": ObjectId(id)}, function(err, result) {
+      assert.equal(null, err);
+      console.log('Quote deleted.');
+      db.close();
+    });
+  });
+  res.send();
 });
 //==================CREATE USER==================
 app.post('/users', function(req, res) {
@@ -71,32 +102,23 @@ app.post('/users', function(req, res) {
   });
   res.send();
 });
-//==================UPDATE==================
-app.put('/update', function(req, res) {
-  var item =  {
-    text: req.body.updatedQuote
-  };
-  var id = req.body.id;
-
+//==================LOGIN==================
+app.put('/users/login', function(req, res) {
+  console.log(req.body);
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-    db.collection('quotes').updateOne({"_id": ObjectId(id)}, {$set: item}, function(err, result) {
-      assert.equal(null, err);
-      console.log('Quote updated.');
-      db.close();
-    });
-  });
-  res.send();
-});
-//==================DELETE==================
-app.put('/delete', function(req, res) {
-  var id = req.body.id;
 
-  MongoClient.connect(url, function(err, db) {
-    assert.equal(null, err);
-    db.collection('quotes').deleteOne({"_id": ObjectId(id)}, function(err, result) {
+    var cursor = db.collection('users');
+    cursor.findOne({username: req.body.username}, function(err, doc) {
       assert.equal(null, err);
-      console.log('Quote deleted.');
+      console.log(doc);
+      bcrypt.compare(req.body.password, doc.password, function(err, res) {
+        if(res) {
+          console.log('worked');
+        } else {
+          console.log('didnt work');
+        }
+      });
       db.close();
     });
   });

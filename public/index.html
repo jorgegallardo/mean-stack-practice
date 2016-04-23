@@ -32,6 +32,14 @@
     }])
 
     .controller('HomeController', ['$scope', '$http', function($scope, $http) {
+      $scope.login = function() {
+        $http.put('/users/login', {username: $scope.username, password: $scope.password})
+        .then(function() {
+          alert('successfully signed in');
+        }, function() { // NOT WORKING CORRECTLY
+          alert('bad login credentials');
+        });
+      };
       function getQuotes() {
         $http.get('/quotes').then(function(response) {
           $scope.quotes = response.data;
