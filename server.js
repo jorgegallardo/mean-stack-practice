@@ -5,6 +5,8 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert'); // module used for writing unit tests for applications
 var ObjectId = require('mongodb').ObjectID;
 var url = 'mongodb://localhost:27017/quotes';
+var bcrypt = require('bcryptjs');
+const saltRounds = 10;
 
 // Use connect method to connect to the Server
 MongoClient.connect(url, function(err, db) {
@@ -53,10 +55,18 @@ app.post('/insert', function(req, res) {
 app.post('/users', function(req, res) {
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-    db.collection('users').insertOne(req.body, function(err, result) {
-      assert.equal(null, err);
-      console.log('User created.');
-      db.close();
+
+    bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+      var newUser = {
+        username: req.body.username,
+        password: hash
+      };
+
+      db.collection('users').insertOne(newUser, function(err, result) {
+        assert.equal(null, err);
+        console.log('User created.');
+        db.close();
+      });
     });
   });
   res.send();
