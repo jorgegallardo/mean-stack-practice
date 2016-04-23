@@ -5,60 +5,33 @@
   <link rel="stylesheet" type="text/css" href="./libs/bootstrap/dist/css/bootstrap.css">
 
 </head>
-<body ng-controller="TheController">
+<body>
   <div class="container">
-    <div class="row">
-      <div class="col-md-6">
-        <h1>CREATE quote</h1>
-        <form class="form-inline">
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="Type your quote here." ng-model="newQuoteText">
-          </div>
-
-          <button type="button" class="btn btn-primary" ng-click="submitNewQuote()">Insert</button>
-        </form>
-
-        <h1>UPDATE quote</h1>
-        <form class="form-horizontal">
-          <div class="form-group">
-            <label for="object-id" class="col-sm-2 control-label">ObjectID</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" placeholder="Type object id here." ng-model="id">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="updated-quote" class="col-sm-2 control-label">Updated Quote</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" placeholder="Type your updated quote here." ng-model="updatedQuote">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-              <button type="submit" class="btn btn-warning" ng-click="updateQuote()">Update</button>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="col-md-6">
-        <h1>READ and DELETE quotes</h1>
-        <ul>
-          <li ng-repeat="quote in quotes">
-            {{quote.text}}
-            <a href ng-click="deleteQuote(quote._id)"><span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-          </li>
-        </ul>
-      </div>
-    </div>
+    <div ng-view></div>
   </div>
 
   <script src="./libs/jquery/dist/jquery.js"></script>
   <script src="./libs/bootstrap/dist/js/bootstrap.js"></script>
   <script src="./libs/angular/angular.js"></script>
+  <script src="./libs/angular-route/angular-route.js"></script>
   <script type="text/javascript">
-    angular.module('practice', [])
-    .controller('TheController', ['$scope', '$http', function($scope, $http) {
+    angular.module('practice', ['ngRoute'])
+    .config(['$routeProvider', function($routeProvider) {
+      $routeProvider
+      .when('/', {
+        templateUrl: 'home.html',
+        controller: 'HomeController'
+      })
+      .when('/signup', {
+        templateUrl: 'signup.html',
+        controller: 'SignupController'
+      })
+      .otherwise({
+        redirectTo: '/'
+      });
+    }])
+
+    .controller('HomeController', ['$scope', '$http', function($scope, $http) {
       function getQuotes() {
         $http.get('/quotes').then(function(response) {
           $scope.quotes = response.data;
@@ -87,7 +60,19 @@
         });
       };
       getQuotes();
-    }]);
+    }])
+
+    .controller('SignupController', ['$scope', '$http', function($scope, $http) {
+      $scope.submitSignup = function() {
+        var newUser = {
+          username: $scope.username,
+          password: $scope.password
+        };
+        $http.post('/users', newUser).then(function() {
+          alert('success');
+        });
+      };
+   }]);
   </script>
 </body>
 </html>

@@ -49,6 +49,18 @@ app.post('/insert', function(req, res) {
   });
   res.send(); //server will hang if this isn't sent
 });
+//==================CREATE USER==================
+app.post('/users', function(req, res) {
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    db.collection('users').insertOne(req.body, function(err, result) {
+      assert.equal(null, err);
+      console.log('User created.');
+      db.close();
+    });
+  });
+  res.send();
+});
 //==================UPDATE==================
 app.put('/update', function(req, res) {
   var item =  {
