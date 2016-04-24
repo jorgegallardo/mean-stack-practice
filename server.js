@@ -104,14 +104,12 @@ app.post('/users', function(req, res) {
 });
 //==================LOGIN==================
 app.put('/users/login', function(req, res) {
-  console.log(req.body);
+  //console.log(req.body);
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-
     var cursor = db.collection('users');
     cursor.findOne({username: req.body.username}, function(err, doc) {
       assert.equal(null, err);
-      console.log(doc);
       bcrypt.compare(req.body.password, doc.password, function(err, res) {
         if(res) {
           console.log('worked');
