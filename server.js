@@ -104,25 +104,32 @@ app.post('/users', function(req, res) {
 });
 //==================LOGIN==================
 app.put('/users/login', function(req, res) {
-  console.log(req.body);
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
 
     var cursor = db.collection('users');
-    cursor.findOne({username: req.body.username}, function(err, doc) {
+    cursor.findOne({username: req.body.username}, function(err, user) {
       assert.equal(null, err);
-      console.log(doc);
-      bcrypt.compare(req.body.password, doc.password, function(err, res) {
-        if(res) {
-          console.log('worked');
-        } else {
-          console.log('didnt work');
-        }
-      });
+      if(!user) {
+        console.log('The user doesn\'t exist.');
+        res.status(400).send('Bad Request');
+      }
+      else {
+        console.log('Found user in database.');
+        bcrypt.compare(req.body.password, user.password, function(err, result) {
+          if(!result) {
+            console.log('Incorrect password.');
+            res.status(400).send('Bad Request');
+          }
+          else {
+            console.log('Correct password.');
+            res.send();
+          }
+        });
+      }
       db.close();
     });
   });
-  res.send();
 });
 
 app.listen(3000, function() {
