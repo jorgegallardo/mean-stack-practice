@@ -104,12 +104,16 @@ app.post('/users', function(req, res) {
 });
 //==================LOGIN==================
 app.put('/users/login', function(req, res) {
+<<<<<<< HEAD
+=======
+  //console.log(req.body);
+>>>>>>> 5d52dea9ee8e81aa69a994480b84bcbba43a782c
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-
     var cursor = db.collection('users');
     cursor.findOne({username: req.body.username}, function(err, user) {
       assert.equal(null, err);
+<<<<<<< HEAD
       if(!user) {
         console.log('The user doesn\'t exist.');
         res.status(400).send('Bad Request');
@@ -127,6 +131,15 @@ app.put('/users/login', function(req, res) {
           }
         });
       }
+=======
+      bcrypt.compare(req.body.password, doc.password, function(err, res) {
+        if(res) {
+          console.log('worked');
+        } else {
+          console.log('didnt work');
+        }
+      });
+>>>>>>> 5d52dea9ee8e81aa69a994480b84bcbba43a782c
       db.close();
     });
   });
