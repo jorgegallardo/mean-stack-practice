@@ -6,6 +6,8 @@ var assert = require('assert'); // module used for writing unit tests for applic
 var ObjectId = require('mongodb').ObjectID;
 var url = 'mongodb://localhost:27017/quotes';
 var bcrypt = require('bcryptjs');
+var jwt = require('jwt-simple');
+const JWT_SECRET = 'catsmeow';
 const saltRounds = 10;
 
 // Use connect method to connect to the Server
@@ -104,7 +106,6 @@ app.post('/users', function(req, res) {
 });
 //==================LOGIN==================
 app.put('/users/login', function(req, res) {
-  //console.log(req.body);
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     var cursor = db.collection('users');
@@ -112,18 +113,19 @@ app.put('/users/login', function(req, res) {
       assert.equal(null, err);
       if(!user) {
         console.log('The user doesn\'t exist.');
-        res.status(400).send('Bad Request');
+        res.status(400).send();
       }
       else {
         console.log('Found user in database.');
         bcrypt.compare(req.body.password, user.password, function(err, result) {
           if(!result) {
             console.log('Incorrect password.');
-            res.status(400).send('Bad Request');
+            res.status(400).send();
           }
           else {
+            var token = jwt.encode(user, JWT_SECRET);
             console.log('Correct password.');
-            res.send();
+            res.send({token: token});
           }
         });
       }

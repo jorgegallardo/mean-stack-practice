@@ -14,8 +14,9 @@
   <script src="./libs/bootstrap/dist/js/bootstrap.js"></script>
   <script src="./libs/angular/angular.js"></script>
   <script src="./libs/angular-route/angular-route.js"></script>
+  <script src="./libs/angular-cookies/angular-cookies.js"></script>
   <script type="text/javascript">
-    angular.module('practice', ['ngRoute'])
+    angular.module('practice', ['ngRoute', 'ngCookies'])
     .config(['$routeProvider', function($routeProvider) {
       $routeProvider
       .when('/', {
@@ -31,16 +32,27 @@
       });
     }])
 
-    .controller('HomeController', ['$scope', '$http', function($scope, $http) {
+    .run(function($rootScope, $cookies) {
+      if($cookies.get('token') && $cookies.get('currentUser')) {
+        $rootScope.token = token;
+        $rootScope.currentUser = $cookies.get('currentUser');
+      }
+    })
+
+    .controller('HomeController', ['$rootScope', '$scope', '$http', '$cookies', function($rootScope, $scope, $http, $cookies) {
       $scope.login = function() {
         $http.put('/users/login', {username: $scope.username, password: $scope.password})
         .then(function(response) {
           if(response) {
-            console.log(response);
-            alert('successfully signed in');
+            console.log(response.data.token);
+            $cookies.put('token', response.data.token);
+            $cookies.put('currentUser', $scope.username);;
+            $rootScope.token = response.data.token
+            $rootScope.currentUser = $scope.username;
+            alert('Successfully signed in.');
           }
-        }, function(response) { // NOT WORKING CORRECTLY
-          alert('bad login credentials');
+        }, function(response) {
+          alert('Bad login credentials.');
         });
       };
       function getQuotes() {
