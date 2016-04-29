@@ -55,6 +55,12 @@
           alert('Bad login credentials.');
         });
       };
+      $scope.logout = function() {
+        $cookies.remove('token');
+        $cookies.remove('currentUser');
+        $rootScope.token = null; // or delete $rootScope.token
+        $rootScope.currentUser = null;
+      };
       function getQuotes() {
         $http.get('/quotes').then(function(response) {
           $scope.quotes = response.data;
