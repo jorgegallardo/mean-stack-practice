@@ -51,7 +51,7 @@ app.post('/insert', function(req, res) {
       db.close();
     });
   });
-  res.send(); //server will hang if this isn't sent
+  return res.send(); //server will hang if this isn't sent
 });
 //==================UPDATE QUOTE==================
 app.put('/update', function(req, res) {
@@ -68,7 +68,7 @@ app.put('/update', function(req, res) {
       db.close();
     });
   });
-  res.send();
+  return res.send();
 });
 //==================DELETE QUOTE==================
 app.put('/delete', function(req, res) {
@@ -102,7 +102,7 @@ app.post('/users', function(req, res) {
       });
     });
   });
-  res.send();
+  return res.send();
 });
 //==================LOGIN==================
 app.put('/users/login', function(req, res) {
@@ -113,19 +113,22 @@ app.put('/users/login', function(req, res) {
       assert.equal(null, err);
       if(!user) {
         console.log('The user doesn\'t exist.');
-        res.status(400).send();
+        return res.status(400).send();
       }
       else {
         console.log('Found user in database.');
         bcrypt.compare(req.body.password, user.password, function(err, result) {
           if(!result) {
             console.log('Incorrect password.');
-            res.status(400).send();
+            return res.status(400).send();
           }
           else {
-            var token = jwt.encode(user, JWT_SECRET);
             console.log('Correct password.');
-            res.send({token: token});
+            var token = jwt.encode(user._id, JWT_SECRET);
+            return res.json({token: token});
+            /*  res.json([body])
+                Sends a JSON response. This method is identical to res.send() with an object or array as the parameter. However, you can use it to convert other values to JSON, such as null, and undefined (although these are technically not valid JSON).
+            */
           }
         });
       }

@@ -32,9 +32,10 @@
       });
     }])
 
+    // do this when angular app start up
     .run(function($rootScope, $cookies) {
       if($cookies.get('token') && $cookies.get('currentUser')) {
-        $rootScope.token = token;
+        $rootScope.token = $cookies.get('token');
         $rootScope.currentUser = $cookies.get('currentUser');
       }
     })
@@ -46,8 +47,8 @@
           if(response) {
             console.log(response.data.token);
             $cookies.put('token', response.data.token);
-            $cookies.put('currentUser', $scope.username);;
-            $rootScope.token = response.data.token
+            $cookies.put('currentUser', $scope.username);
+            $rootScope.token = response.data.token;
             $rootScope.currentUser = $scope.username;
             alert('Successfully signed in.');
           }
