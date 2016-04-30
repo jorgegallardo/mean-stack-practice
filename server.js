@@ -17,12 +17,8 @@ MongoClient.connect(url, function(err, db) {
   console.log("Successfully connected to database server.");
   db.close();
 });
-
-// parse application/json 
 app.use(bodyParser.json());
-
 app.use(express.static('public'));
-
 //==================LOAD QUOTES==================
 app.get('/quotes', function(req, res) {
   var quotesArray = [];
@@ -33,8 +29,8 @@ app.get('/quotes', function(req, res) {
       assert.equal(null, err);
       quotesArray.push(doc);
     }, function() {
-      res.send(quotesArray);
       db.close();
+      return res.send(quotesArray);
     });
   });
 });
@@ -51,7 +47,7 @@ app.post('/insert', function(req, res) {
       db.close();
     });
   });
-  return res.send(); //server will hang if this isn't sent
+  return res.send();
 });
 //==================UPDATE QUOTE==================
 app.put('/update', function(req, res) {
@@ -59,7 +55,6 @@ app.put('/update', function(req, res) {
     text: req.body.updatedQuote
   };
   var id = req.body.id;
-
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     db.collection('quotes').updateOne({"_id": ObjectId(id)}, {$set: item}, function(err, result) {
@@ -82,19 +77,17 @@ app.put('/delete', function(req, res) {
       db.close();
     });
   });
-  res.send();
+  return res.send();
 });
 //==================CREATE USER==================
 app.post('/users', function(req, res) {
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
-
     bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
       var newUser = {
         username: req.body.username,
         password: hash
       };
-
       db.collection('users').insertOne(newUser, function(err, result) {
         assert.equal(null, err);
         console.log('User created.');
@@ -136,7 +129,7 @@ app.put('/users/login', function(req, res) {
     });
   });
 });
-
+//==================START SERVER==================
 app.listen(3000, function() {
   console.log('Listening on port 3000.');
 });
